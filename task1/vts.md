@@ -139,6 +139,67 @@ The Vacation Tracking System (VTS) is a web application that aims to to help HRs
 3. HR clicks on the "Reject" button and adds a comment explaining the reason for rejection.
 4. The system updates the leave request status to "Rejected" and sends an email notification to the employee with the rejection reason.
 
+### 6.2. Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant E as Employee
+    participant S as Leave Management System
+    participant M as Manager
+    participant HR as HR
+    participant EM as Email Service
+
+    %% --- SUBMIT LEAVE REQUEST ---
+    E->>S: Log in and open "Submit New Leave Request"
+    E->>S: Fill leave form (type, dates, times, etc.)
+    S-->>E: Prompt to upload medical certificate (if required)
+    E->>S: Upload medical certificate
+    S->>S: Validate data & check team availability
+    S-->>E: Display warning (if conflicts found)
+    E->>S: Confirm and submit leave request
+    S->>S: Save request with status = "Pending"
+    S->>EM: Send confirmation email to Employee
+    S->>M: Notify Manager of pending request
+
+    %% --- MANAGER APPROVAL / REJECTION ---
+    M->>S: Open "Team Leave Requests"
+    M->>S: Review leave request details
+    alt Manager Approves
+        M->>S: Click "Approve"
+        S->>S: Update status = "Approved"
+        S->>S: Update leave balance and team calendar
+        S->>EM: Send approval email to Employee and HR
+    else Manager Rejects
+        M->>S: Click "Reject" and enter comment
+        S->>S: Update status = "Rejected"
+        S->>EM: Send rejection email with comment to Employee
+    end
+
+    %% --- HR ACTION (Optional Final Review) ---
+    HR->>S: Open "All Leave Requests"
+    HR->>S: Approve or Reject request
+    alt HR Approves
+        HR->>S: Approve request
+        S->>S: Update status = "Approved"
+        S->>EM: Notify Employee and Manager
+    else HR Rejects
+        HR->>S: Reject with comment
+        S->>S: Update status = "Rejected"
+        S->>EM: Send rejection email to Employee
+    end
+
+    %% --- CANCELLATION ---
+    E->>S: Select approved leave → click "Cancel"
+    S-->>E: Ask for confirmation
+    E->>S: Confirm cancellation
+    S->>S: Update status = "Cancelled"
+    S->>EM: Notify Employee, Manager, and HR of cancellation
+```
+
+### 6.3. Flowchart
+
 ```mermaid
 
 flowchart TD
