@@ -223,3 +223,19 @@ erDiagram
 
 ```
 
+## 8. Pseudo Code
+
+```text
+
+FUNCTION submitLeaveRequest(employeeId, leaveTypeId, startDate, endDate, durationType, medicalCertificate):
+    IF NOT hasSufficientLeaveBalance(employeeId, leaveTypeId, startDate, endDate):
+        RETURN "Insufficient leave balance"
+
+    teamAvailability = checkTeamAvailability(employeeId, startDate, endDate)
+    IF teamAvailability < MIN_REQUIRED_TEAM_MEMBERS:
+        SHOW_WARNING("High number of team members on leave")
+
+    leaveRequestId = SAVE_LEAVE_REQUEST(employeeId, leaveTypeId, startDate, endDate, durationType, medicalCertificate, "Pending")
+    SEND_EMAIL_NOTIFICATION(employeeId, "Leave Request Submitted", "Your leave request has been submitted and is pending approval.")
+    RETURN "Leave request submitted successfully with ID: " + leaveRequestId
+```
